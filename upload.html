@@ -78,7 +78,7 @@
           },
           body: JSON.stringify({
             message: 'add video',
-            content: btoa(JSON.stringify(videos)),
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(videos)))),
             sha: await getSha()
           })
         });
@@ -98,4 +98,5 @@
 
 </body>
 </html>
+
 
