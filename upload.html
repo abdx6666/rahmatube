@@ -60,7 +60,7 @@
 
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const newVideo = { name: file.name, data: reader.result };
+        const newVideo = { name: `${Date.now()}-${file.name}`, data: reader.result };
 
         // نجلب القائمة الحالية
         const res = await fetch('https://abdx6666.github.io/rahmatube/videos.json');
@@ -98,3 +98,4 @@
 
 </body>
 </html>
+
