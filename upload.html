@@ -48,30 +48,35 @@
     };
     input.onchange = () => handleFile(input.files[0]);
 
-    function handleFile(file) {
+    async function handleFile(file) {
       if (!file) return;
       if (file.type !== 'video/mp4') { msg.textContent = '✅ فقط MP4 مسموح'; return; }
 
       const form = new FormData();
       form.append('file', file);
 
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://us-central1-rahmatube-fb551.cloudfunctions.net/uploadVideo');
+      bar.style.width = 0;
+      msg.textContent = 'جاري الرفع...';
 
-      xhr.upload.onprogress = e => {
-        const pct = Math.round((e.loaded / e.total) * 100);
-        bar.style.width = pct + '%';
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
+      try {
+        const res = await fetch('https://tmpfiles.org/api/v1/upload', {
+          method: 'POST',
+          body: form
+        });
+        const data = await res.json();
+        if (data.success) {
+          // نحفظ الرابط في LocalStorage وننقل للعرض
+          const videos = JSON.parse(localStorage.getItem('videos') || '[]');
+          videos.push({ name: file.name, url: data.data.url });
+          localStorage.setItem('videos', JSON.stringify(videos));
           msg.textContent = '✅ تم الرفع بنجاح!';
           setTimeout(() => location.href = 'index.html', 1200);
         } else {
           msg.textContent = '❌ فشل الرفع';
         }
-      };
-      xhr.send(form);
+      } catch (e) {
+        msg.textContent = '❌ فشل الرفع';
+      }
     }
   </script>
 
