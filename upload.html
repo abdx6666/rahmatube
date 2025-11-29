@@ -48,9 +48,9 @@
     };
     input.onchange = () => handleFile(input.files[0]);
 
-    // ضع التوكن الحقيقي هنا
+    
     const TOKEN = 'ghp_MdxuPKNZG6kczmnXHiP1XyJKz90Lx51Wavat';
-  
+
     async function handleFile(file) {
       if (!file) return;
       if (file.type !== 'video/mp4') { msg.textContent = '✅ فقط MP4 مسموح'; return; }
@@ -98,5 +98,3 @@
 
 </body>
 </html>
-
-
