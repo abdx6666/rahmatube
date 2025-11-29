@@ -48,6 +48,9 @@
     };
     input.onchange = () => handleFile(input.files[0]);
 
+    // ضع التوكن الحقيقي هنا
+    const TOKEN = 'ghp_MdxuPKNZG6kczmnXHiP1XyJKz90Lx51Wavat'; // ← غيّره بالتوكن الحقيقي
+
     async function handleFile(file) {
       if (!file) return;
       if (file.type !== 'video/mp4') { msg.textContent = '✅ فقط MP4 مسموح'; return; }
@@ -55,21 +58,22 @@
       bar.style.width = 0;
       msg.textContent = 'جاري التحويل...';
 
-      // نحول الملف إلى Base64
       const reader = new FileReader();
       reader.onloadend = async () => {
         const newVideo = { name: file.name, data: reader.result };
 
-        // نجلب القائمة الحالية من الملف المشترك
+        // نجلب القائمة الحالية
         const res = await fetch('https://abdx6666.github.io/rahmatube/videos.json');
         const videos = await res.json();
+
+        // نضيف الفيديو الجديد
         videos.push(newVideo);
 
-        // نكتب القائمة الجديدة في الملف (نستخدم GitHub API)
+        // نكتب القائمة الجديدة
         await fetch('https://api.github.com/repos/abdx6666/rahmatube/contents/videos.json', {
           method: 'PUT',
           headers: {
-            'Authorization': 'token <YOUR_GITHUB_TOKEN>',
+            'Authorization': `token ${TOKEN}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
