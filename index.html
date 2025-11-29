@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>RahmaTube - كل الفيديوهات</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Tahoma',sans-serif;background:#0f0f0f;color:#fff}
+    header{padding:15px 20px;background:#111;display:flex;align-items:center;justify-content:space-between}
+    header h2{color:#f5b00d}
+    header a{padding:8px 16px;background:#f5b00d;color:#111;border-radius:6px;text-decoration:none}
+    #container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding:20px}
+    .card{background:#181818;border-radius:8px;overflow:hidden;cursor:pointer;transition:.3s}
+    .card:hover{transform:scale(1.03)}
+    .thumb{width:100%;height:160px;background:#222;display:flex;align-items:center;justify-content:center;font-size:2rem;color:#444}
+    .info{padding:10px}
+    .info h4{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .info p{font-size:.8rem;color:#aaa;margin-top:4px}
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>RahmaTube</h2>
+    <a href="upload.html">+ رفع فيديو</a>
+  </header>
+
+  <div id="container">جاري التحميل...</div>
+
+  <script>
+    const container = document.getElementById('container');
+
+    async function loadVideos() {
+      try {
+        const res = await fetch('https://us-central1-rahmatube-fb551.cloudfunctions.net/listVideos');
+        const videos = await res.json();
+        if (!videos.length) { container.innerHTML = '<p>لا توجد فيديوهات بعد</p>'; return; }
+
+        container.innerHTML = '';
+        videos.forEach(v => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="thumb">▶</div>
+            <div class="info">
+              <h4>${v.name}</h4>
+              <p>اضغط للمشاهدة</p>
+            </div>
+          `;
+          card.onclick = () => openPlayer(v.url);
+          container.appendChild(card);
+        });
+      } catch (e) {
+        container.innerHTML = '<p>فشل التحميل</p>';
+      }
+    }
+
+    function openPlayer(url) {
+      const html = `
+        <html>
+          <head><title>مشغل الفيديو</title></head>
+          <body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center">
+            <video controls autoplay style="width:90%;max-width:800px" src="${url}"></video>
+          </body>
+        </html>
+      `;
+      const w = window.open('', '_blank', 'width=820,height=500');
+      w.document.write(html);
+      w.document.close();
+    }
+
+    loadVideos();
+  </script>
+
+</body>
+</html>

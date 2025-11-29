@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>رفع فيديو</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:'Tahoma',sans-serif;background:#111;color:#fff;display:flex;flex-direction:column;align-items:center;padding:40px 20px}
+    h1{margin-bottom:20px}
+    #uploadArea{width:90%;max-width:500px;border:2px dashed #f5b00d;border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:.3s}
+    #uploadArea:hover{background:#1a1a1a}
+    input[type="file"]{display:none}
+    button{padding:12px 28px;font-size:1rem;border:none;border-radius:6px;background:#f5b00d;color:#111;cursor:pointer;margin-top:15px}
+    #progress{width:100%;height:6px;background:#444;border-radius:3px;margin-top:15px;overflow:hidden}
+    #bar{height:100%;background:#f5b00d;width:0%;transition:.3s}
+    #msg{margin-top:10px;font-size:.9rem}
+    a{color:#f5b00d;text-decoration:none;margin-top:20px}
+  </style>
+</head>
+<body>
+
+  <h1>📤 ارفع فيديو جديد</h1>
+
+  <div id="uploadArea">
+    <p>اسحب الملف هنا أو اضغط لاختياره</p>
+    <input type="file" id="fileInput" accept="video/mp4">
+    <button id="uploadBtn">اختر ملف</button>
+    <div id="progress"><div id="bar"></div></div>
+    <div id="msg"></div>
+  </div>
+
+  <a href="index.html">📺 صفحة الفيديوهات</a>
+
+  <script>
+    const area   = document.getElementById('uploadArea');
+    const input  = document.getElementById('fileInput');
+    const btn    = document.getElementById('uploadBtn');
+    const bar    = document.getElementById('bar');
+    const msg    = document.getElementById('msg');
+
+    btn.onclick = () => input.click();
+
+    area.ondragover = e => { e.preventDefault(); area.style.borderColor = '#fff'; };
+    area.ondrop = e => {
+      e.preventDefault();
+      area.style.borderColor = '#f5b00d';
+      handleFile(e.dataTransfer.files[0]);
+    };
+    input.onchange = () => handleFile(input.files[0]);
+
+    function handleFile(file) {
+      if (!file) return;
+      if (file.type !== 'video/mp4') { msg.textContent = '✅ فقط MP4 مسموح'; return; }
+
+      const form = new FormData();
+      form.append('file', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://us-central1-rahmatube-fb551.cloudfunctions.net/uploadVideo');
+
+      xhr.upload.onprogress = e => {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        bar.style.width = pct + '%';
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          msg.textContent = '✅ تم الرفع بنجاح!';
+          setTimeout(() => location.href = 'index.html', 1200);
+        } else {
+          msg.textContent = '❌ فشل الرفع';
+        }
+      };
+      xhr.send(form);
+    }
+  </script>
+
+</body>
+</html>
