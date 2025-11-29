@@ -59,14 +59,14 @@
       msg.textContent = 'جاري الرفع...';
 
       try {
-        const res = await fetch('https://file.io/?expires=30d', {
-          method: 'POST',
-          body: form
+        const res = await fetch('https://transfer.sh/' + encodeURIComponent(file.name), {
+          method: 'PUT',
+          body: file
         });
-        const data = await res.json();
-        if (data.success) {
+        if (res.ok) {
+          const url = await res.text(); // رابط مباشر
           const videos = JSON.parse(localStorage.getItem('videos') || '[]');
-          videos.push({ name: file.name, url: data.link });
+          videos.push({ name: file.name, url: url });
           localStorage.setItem('videos', JSON.stringify(videos));
           msg.textContent = '✅ تم الرفع بنجاح!';
           setTimeout(() => location.href = 'index.html', 1200);
