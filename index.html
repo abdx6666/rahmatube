@@ -31,29 +31,24 @@
   <script>
     const container = document.getElementById('container');
 
-    async function loadVideos() {
-      try {
-        const res = await fetch('https://us-central1-rahmatube-fb551.cloudfunctions.net/listVideos');
-        const videos = await res.json();
-        if (!videos.length) { container.innerHTML = '<p>لا توجد فيديوهات بعد</p>'; return; }
+    function loadVideos() {
+      const videos = JSON.parse(localStorage.getItem('videos') || '[]');
+      if (!videos.length) { container.innerHTML = '<p>لا توجد فيديوهات بعد</p>'; return; }
 
-        container.innerHTML = '';
-        videos.forEach(v => {
-          const card = document.createElement('div');
-          card.className = 'card';
-          card.innerHTML = `
-            <div class="thumb">▶</div>
-            <div class="info">
-              <h4>${v.name}</h4>
-              <p>اضغط للمشاهدة</p>
-            </div>
-          `;
-          card.onclick = () => openPlayer(v.url);
-          container.appendChild(card);
-        });
-      } catch (e) {
-        container.innerHTML = '<p>فشل التحميل</p>';
-      }
+      container.innerHTML = '';
+      videos.forEach(v => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb">▶</div>
+          <div class="info">
+            <h4>${v.name}</h4>
+            <p>اضغط للمشاهدة</p>
+          </div>
+        `;
+        card.onclick = () => openPlayer(v.url);
+        container.appendChild(card);
+      });
     }
 
     function openPlayer(url) {
