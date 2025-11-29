@@ -59,15 +59,14 @@
       msg.textContent = 'جاري الرفع...';
 
       try {
-        const res = await fetch('https://tmpfiles.org/api/v1/upload', {
+        const res = await fetch('https://file.io/?expires=30d', {
           method: 'POST',
           body: form
         });
         const data = await res.json();
         if (data.success) {
-          // نحفظ الرابط في LocalStorage وننقل للعرض
           const videos = JSON.parse(localStorage.getItem('videos') || '[]');
-          videos.push({ name: file.name, url: data.data.url });
+          videos.push({ name: file.name, url: data.link });
           localStorage.setItem('videos', JSON.stringify(videos));
           msg.textContent = '✅ تم الرفع بنجاح!';
           setTimeout(() => location.href = 'index.html', 1200);
