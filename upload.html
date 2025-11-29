@@ -48,34 +48,23 @@
     };
     input.onchange = () => handleFile(input.files[0]);
 
-    async function handleFile(file) {
+    function handleFile(file) {
       if (!file) return;
       if (file.type !== 'video/mp4') { msg.textContent = '✅ فقط MP4 مسموح'; return; }
 
-      const form = new FormData();
-      form.append('file', file);
-
       bar.style.width = 0;
-      msg.textContent = 'جاري الرفع...';
+      msg.textContent = 'جاري التحويل...';
 
-      try {
-        const res = await fetch('https://transfer.sh/' + encodeURIComponent(file.name), {
-          method: 'PUT',
-          body: file
-        });
-        if (res.ok) {
-          const url = await res.text(); // رابط مباشر
-          const videos = JSON.parse(localStorage.getItem('videos') || '[]');
-          videos.push({ name: file.name, url: url });
-          localStorage.setItem('videos', JSON.stringify(videos));
-          msg.textContent = '✅ تم الرفع بنجاح!';
-          setTimeout(() => location.href = 'index.html', 1200);
-        } else {
-          msg.textContent = '❌ فشل الرفع';
-        }
-      } catch (e) {
-        msg.textContent = '❌ فشل الرفع';
-      }
+      // نحول الملف إلى Base64 ونحفظه في المتصفح
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const videos = JSON.parse(localStorage.getItem('videos') || '[]');
+        videos.push({ name: file.name, data: reader.result });
+        localStorage.setItem('videos', JSON.stringify(videos));
+        msg.textContent = '✅ تم الحفظ بنجاح!';
+        setTimeout(() => location.href = 'index.html', 1200);
+      };
+      reader.readAsDataURL(file);
     }
   </script>
 
